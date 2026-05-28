@@ -1325,4 +1325,71 @@
             } else {
                 studentView.classList.add('hidden');
                 parentView.classList.remove('hidden');
-                parentBtn.style.backgroundC
+                parentBtn.style.backgroundColor = '#B4C7E7';
+                parentBtn.style.color = '#2D3436';
+                studentBtn.style.backgroundColor = '';
+                studentBtn.style.color = '';
+                studentBtn.className = "px-5 py-2.5 rounded-lg text-xs font-bold transition-all bg-white border border-gray-200 text-gray-500 hover:bg-gray-50";
+            }
+        }
+        // EXPORT ACTION: SIMULATED INSTANT MAIL & WHATSAPP DELIVERABILITY
+        function dispatchLeadEmailAndWhatsApp() {
+            // Pull data
+            const name = localStorage.getItem('navya_user_name') || '--';
+            const sClass = localStorage.getItem('navya_user_class') || '--';
+            const email = localStorage.getItem('navya_user_email') || '';
+            const phone = localStorage.getItem('navya_user_phone') || '';
+            // Compute values
+            let sciSum = 0; ["Q1", "Q2", "Q8", "Q11"].forEach(id => sciSum += (globalFormState[id] || 0));
+            const scienceScore = (sciSum / 24) * 20;
+            let comSum = 0; ["Q4", "Q9", "Q12"].forEach(id => comSum += (globalFormState[id] || 0));
+            const commerceScore = (comSum / 18) * 20;
+            let humSum = 0; ["Q3", "Q5", "Q6", "Q7", "Q10", "Q13"].forEach(id => humSum += (globalFormState[id] || 0));
+            const humanitiesScore = (humSum / 36) * 20;
+            let verdict = "SCIENCE";
+            if (commerceScore > scienceScore && commerceScore > humanitiesScore) verdict = "COMMERCE";
+            if (humanitiesScore > scienceScore && humanitiesScore > commerceScore) verdict = "HUMANITIES";
+            // Format message template
+            const message = `Hello Navya, I just completed my Career Stream Compass Assessment. Here are my details:%0A` +
+                            `*Student Name:* ${name}%0A` +
+                            `*Class:* ${sClass}%0A` +
+                            `*Email:* ${email}%0A` +
+                            `*Verdict:* ${verdict}%0A` +
+                            `*Scores:* Science: ${scienceScore.toFixed(1)}/20, Commerce: ${commerceScore.toFixed(1)}/20, Humanities: ${humanitiesScore.toFixed(1)}/20%0A` +
+                            `Please review my profile and help me lock my 1:1 consultation session!`;
+            // Open Mail Client
+            const mailtoLink = `mailto:Navya.mn@finnfluent.org?subject=CareerWithNavya results for ${name}&body=Hello Navya,%0A%0AI have successfully completed my Stream Compass Assessment.%0A%0AStudent: ${name}%0AClass: ${sClass}%0AComputed Trajectory: ${verdict}%0A%0AScience: ${scienceScore.toFixed(1)}/20%0ACommerce: ${commerceScore.toFixed(1)}/20%0AHumanities: ${humanitiesScore.toFixed(1)}/20%0A%0APlease contact us at ${phone} / ${email} to discuss details.`;
+            
+            // Trigger Mail client
+            window.open(mailtoLink, '_blank');
+            // Copy metadata block to Clipboard
+            const shareableText = `Student: ${name}\nClass: ${sClass}\nVerdict: ${verdict}\nScience: ${scienceScore.toFixed(1)}/20\nCommerce: ${commerceScore.toFixed(1)}/20\nHumanities: ${humanitiesScore.toFixed(1)}/20`;
+            const dummyInput = document.createElement('textarea');
+            dummyInput.value = shareableText;
+            document.body.appendChild(dummyInput);
+            dummyInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummyInput);
+            injectFlashAlert("Dossier data formatted successfully! Results generated in your mail draft and copied to clipboard.");
+        }
+        // Base64 Encoded Sharing Link Generation
+        function executeShareAction() {
+            try {
+                const b64Token = btoa(JSON.stringify(globalFormState));
+                const targetLink = `${window.location.origin}${window.location.pathname}?results=${b64Token}`;
+                
+                const box = document.createElement('input');
+                box.value = targetLink;
+                document.body.appendChild(box);
+                box.select();
+                document.execCommand('copy');
+                document.body.removeChild(box);
+                injectFlashAlert("Unique results URL copied to clipboard! Share with your counselor.");
+            } catch (err) {
+                console.error("Link packaging error:", err);
+                injectFlashAlert("Failed to export link profile parameters.");
+            }
+        }
+    </script>
+</body>
+</html>
